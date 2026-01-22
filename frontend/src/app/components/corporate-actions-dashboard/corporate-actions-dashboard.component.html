@@ -1,0 +1,205 @@
+<div class="min-h-screen p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1
+                    class="text-3xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                    Corporate Actions Dashboard
+                </h1>
+                <p class="text-slate-400 mt-1">
+                    Real-time feed of corporate action events
+                </p>
+            </div>
+
+            <!-- Connection Status -->
+            <div class="flex items-center gap-2 px-4 py-2 glass rounded-lg">
+                <span class="w-3 h-3 rounded-full animate-pulse" [class.bg-emerald-400]="connected()"
+                    [class.bg-red-400]="!connected()">
+                </span>
+                <span class="text-sm" [class.text-emerald-400]="connected()" [class.text-red-400]="!connected()">
+                    {{ connected() ? 'Live Connected' : 'Disconnected' }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Total Events -->
+            <div class="glass rounded-xl p-4 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Total Events</p>
+                        <p class="text-3xl font-bold text-white mt-1">{{ stats().total }}</p>
+                    </div>
+                    <div class="text-3xl opacity-50">📈</div>
+                </div>
+            </div>
+
+            <!-- Dividends -->
+            <div class="glass rounded-xl p-4 card-hover border-l-4 border-emerald-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-emerald-400 text-sm">Dividends</p>
+                        <p class="text-3xl font-bold text-emerald-400 mt-1">{{ stats().dividends }}</p>
+                    </div>
+                    <div class="text-3xl">💰</div>
+                </div>
+            </div>
+
+            <!-- Stock Splits -->
+            <div class="glass rounded-xl p-4 card-hover border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-400 text-sm">Stock Splits</p>
+                        <p class="text-3xl font-bold text-purple-400 mt-1">{{ stats().splits }}</p>
+                    </div>
+                    <div class="text-3xl">📊</div>
+                </div>
+            </div>
+
+            <!-- Mergers -->
+            <div class="glass rounded-xl p-4 card-hover border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-400 text-sm">Mergers</p>
+                        <p class="text-3xl font-bold text-blue-400 mt-1">{{ stats().mergers }}</p>
+                    </div>
+                    <div class="text-3xl">🤝</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulate Event Section -->
+        <div class="glass rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span>🎯</span>
+                Simulate Corporate Action
+            </h2>
+            <div class="flex flex-wrap gap-3">
+                <button (click)="simulateRandomEvent()" [disabled]="isSimulating()" class="btn btn-primary">
+                    <svg *ngIf="isSimulating()" class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    🎲 Random Event
+                </button>
+                <button (click)="simulateEvent('DIVIDEND')" [disabled]="isSimulating()" class="btn btn-dividend">
+                    💰 Dividend
+                </button>
+                <button (click)="simulateEvent('STOCK_SPLIT')" [disabled]="isSimulating()" class="btn btn-split">
+                    📊 Stock Split
+                </button>
+                <button (click)="simulateEvent('MERGER')" [disabled]="isSimulating()" class="btn btn-merger">
+                    🤝 Merger
+                </button>
+                <button (click)="clearAllEvents()" class="btn btn-ghost ml-auto">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2">
+            <button (click)="setFilter('ALL')"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                [class.bg-white/20]="selectedFilter() === 'ALL'" [class.text-white]="selectedFilter() === 'ALL'"
+                [class.bg-white/5]="selectedFilter() !== 'ALL'" [class.text-slate-400]="selectedFilter() !== 'ALL'">
+                All Events
+            </button>
+            <button (click)="setFilter('DIVIDEND')"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                [class.bg-emerald-500/20]="selectedFilter() === 'DIVIDEND'"
+                [class.text-emerald-400]="selectedFilter() === 'DIVIDEND'"
+                [class.bg-white/5]="selectedFilter() !== 'DIVIDEND'"
+                [class.text-slate-400]="selectedFilter() !== 'DIVIDEND'">
+                💰 Dividends
+            </button>
+            <button (click)="setFilter('STOCK_SPLIT')"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                [class.bg-purple-500/20]="selectedFilter() === 'STOCK_SPLIT'"
+                [class.text-purple-400]="selectedFilter() === 'STOCK_SPLIT'"
+                [class.bg-white/5]="selectedFilter() !== 'STOCK_SPLIT'"
+                [class.text-slate-400]="selectedFilter() !== 'STOCK_SPLIT'">
+                📊 Stock Splits
+            </button>
+            <button (click)="setFilter('MERGER')"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                [class.bg-blue-500/20]="selectedFilter() === 'MERGER'"
+                [class.text-blue-400]="selectedFilter() === 'MERGER'" [class.bg-white/5]="selectedFilter() !== 'MERGER'"
+                [class.text-slate-400]="selectedFilter() !== 'MERGER'">
+                🤝 Mergers
+            </button>
+        </div>
+
+        <!-- Events List -->
+        <div class="space-y-4">
+            <div *ngIf="filteredEvents().length === 0" class="glass rounded-xl p-12 text-center">
+                <div class="text-6xl mb-4">📭</div>
+                <h3 class="text-xl font-semibold text-white mb-2">No Events Yet</h3>
+                <p class="text-slate-400 mb-6">
+                    Click the "Simulate Event" buttons above to generate corporate action events
+                </p>
+                <button (click)="simulateRandomEvent()" class="btn btn-primary">
+                    🎲 Generate Random Event
+                </button>
+            </div>
+
+            <ng-container *ngIf="filteredEvents().length > 0">
+                <div *ngFor="let event of filteredEvents(); trackBy: trackByEventId"
+                    class="event-card glass animate-slide-in" [ngClass]="getEventCardClass(event.type)">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                        <!-- Event Icon & Type -->
+                        <div class="flex items-center gap-3">
+                            <div class="text-4xl">{{ getEventIcon(event.type) }}</div>
+                            <div>
+                                <span class="badge" [ngClass]="getBadgeClass(event.type)">
+                                    {{ event.type === 'STOCK_SPLIT' ? 'STOCK SPLIT' : event.type }}
+                                </span>
+                                <p class="text-xs text-slate-500 mt-1">
+                                    {{ formatTime(event.announcedAt) }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Event Details -->
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xl font-bold text-white">{{ event.ticker }}</span>
+                                <span class="text-slate-400">|</span>
+                                <span class="text-slate-300">{{ event.companyName }}</span>
+                            </div>
+                            <p class="text-slate-400">{{ event.description }}</p>
+                        </div>
+
+                        <!-- Event Value -->
+                        <div class="text-right">
+                            <ng-container *ngIf="event.type === 'DIVIDEND' && event.amount">
+                                <p class="text-2xl font-bold text-emerald-400">${{ event.amount }}</p>
+                                <p class="text-xs text-slate-500">per share</p>
+                            </ng-container>
+                            <ng-container *ngIf="event.type === 'STOCK_SPLIT' && event.ratio">
+                                <p class="text-2xl font-bold text-purple-400">{{ event.ratio }}</p>
+                                <p class="text-xs text-slate-500">split ratio</p>
+                            </ng-container>
+                            <ng-container *ngIf="event.type === 'MERGER' && event.targetCompany">
+                                <p class="text-sm font-medium text-blue-400">{{ event.targetCompany }}</p>
+                                <p class="text-xs text-slate-500">target company</p>
+                            </ng-container>
+                        </div>
+
+                        <!-- Effective Date -->
+                        <div class="text-right border-l border-white/10 pl-4">
+                            <p class="text-xs text-slate-500 uppercase">Effective Date</p>
+                            <p class="text-sm font-medium text-white">{{ formatDate(event.effectiveDate) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</div>

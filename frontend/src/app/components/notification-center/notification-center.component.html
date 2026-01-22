@@ -1,0 +1,87 @@
+<div class="relative">
+  <!-- Notification Bell Button -->
+  <button (click)="toggleDropdown()"
+    class="relative p-2 rounded-lg transition-all duration-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+    <!-- Bell Icon -->
+    <svg class="w-6 h-6 text-slate-300 hover:text-white transition-colors" fill="none" stroke="currentColor"
+      viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+    </svg>
+
+    <!-- Unread Badge -->
+    <span *ngIf="unreadCount() > 0"
+      class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg animate-bounce-subtle">
+      {{ unreadCount() > 9 ? '9+' : unreadCount() }}
+    </span>
+
+    <!-- Connection Status Indicator -->
+    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-slate-900"
+      [class.bg-emerald-400]="connected()" [class.bg-red-400]="!connected()">
+    </span>
+  </button>
+
+  <!-- Dropdown Panel -->
+  <div *ngIf="isOpen()" class="absolute right-0 mt-2 w-96 glass rounded-xl overflow-hidden z-50 animate-slide-in">
+    <!-- Header -->
+    <div class="px-4 py-3 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-b border-white/10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+          <span>🔔</span>
+          Notifications
+        </h3>
+        <button *ngIf="unreadCount() > 0" (click)="markAllAsRead()"
+          class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium">
+          Mark all as read
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">
+        {{ unreadCount() }} unread notification{{ unreadCount() !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+    <!-- Events List -->
+    <div class="max-h-80 overflow-y-auto">
+      <div *ngIf="latestEvents().length === 0" class="px-4 py-8 text-center">
+        <div class="text-4xl mb-2">📭</div>
+        <p class="text-slate-400 text-sm">No notifications yet</p>
+        <p class="text-slate-500 text-xs mt-1">Corporate actions will appear here</p>
+      </div>
+
+      <ng-container *ngIf="latestEvents().length > 0">
+        <div *ngFor="let event of latestEvents(); trackBy: trackByEventId"
+          class="px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
+          [class.bg-white/5]="!event.read" (click)="markAsRead(event)">
+          <div class="flex items-start gap-3">
+            <!-- Event Icon -->
+            <div class="text-2xl">{{ getEventIcon(event.type) }}</div>
+
+            <!-- Event Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge" [ngClass]="getEventTypeClass(event.type)">
+                  {{ event.type === 'STOCK_SPLIT' ? 'SPLIT' : event.type }}
+                </span>
+                <span class="text-xs text-slate-500">{{ formatTime(event.announcedAt) }}</span>
+                <span *ngIf="!event.read" class="w-2 h-2 bg-indigo-500 rounded-full"></span>
+              </div>
+              <p class="text-sm font-medium text-white truncate">
+                {{ event.ticker }} - {{ event.companyName }}
+              </p>
+              <p class="text-xs text-slate-400 truncate mt-0.5">
+                {{ event.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-4 py-2 bg-slate-900/50 border-t border-white/10">
+      <p class="text-xs text-center text-slate-500">
+        Showing latest 5 notifications
+      </p>
+    </div>
+  </div>
+</div>

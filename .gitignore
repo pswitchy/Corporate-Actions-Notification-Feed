@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Angular
+.angular/
+.cache/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+test-main.js
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Backend
+backend/db.json
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
