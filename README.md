@@ -2,7 +2,8 @@
 
 A full-stack application demonstrating real-time updates for corporate action events (Dividends, Stock Splits, Mergers) using Node.js, Socket.io, and Angular 16+.
 
-![Dashboard Preview](docs/dashboard-preview.png)
+<img width="1365" height="614" alt="Screenshot 2026-01-22 203709" src="https://github.com/user-attachments/assets/87249a0d-5f0b-44ff-9ecd-5e37694c7a3f" />
+
 
 ## 🚀 Features
 
